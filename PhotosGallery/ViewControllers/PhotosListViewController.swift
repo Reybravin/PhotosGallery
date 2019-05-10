@@ -17,96 +17,107 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
     
     let defaultSpacing : CGFloat = 10
     
-    private let api = AgileApi.shared
+    //private let api = AgileApi.shared
     
-    private var isUserAuthenticated : Bool {
-        get { return AgileApi.shared.isAuthenticated }
-        set { self.loadImages() }
-    }
+//    private var isUserAuthenticated : Bool {
+//        get { return AgileApi.shared.isAuthenticated }
+//        set { self.loadImages() }
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        loadImages()
+        bindToViewModel()
+        viewModel.loadImages()
     }
 
     // MARK: Methods
     
     private func setupView(){
-        self.collectionView!.register(PhotoCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        self.collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: reuseIdentifier)
     }
     
-    private func loadImages(){
+    private func bindToViewModel() {
         
-        if isUserAuthenticated {
-            fetchPictures(page: 1, completion: { [weak self] success in
-                if success {
-                    DispatchQueue.main.async {
-                        self?.collectionView.reloadData()
-                    }
-                }
-            })
-            
-        } else {
-            api.authenticateUser { [weak self] (result) in
-                if case .success (_ ) = result {
-                    self?.isUserAuthenticated = true
-                }
+        viewModel.didLoadImages = {
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
             }
         }
         
     }
     
-    private func fetchPictures(page: Int, completion: @escaping (_ success: Bool)->Void) {
-        
-        api.fetchImagesList(page: page) { [weak self] (result) in
-            
-            guard let strongSelf = self else { return }
-            
-            switch result {
-                
-            case .success(let imagesResponse):
-                //print(imagesResponse)
-                strongSelf.saveImagesResponse(imagesResponse)
-                completion(true)
-                
-            case .failure(let error):
-                //print(error)
-                if strongSelf.isAuthError(error) {
-                    strongSelf.api.deleteAccessToken()
-                }
-                completion(false)
-            }
-        }
-    }
+//    private func loadImages(){
+//
+//        if isUserAuthenticated {
+//            fetchPictures(page: 1, completion: { [weak self] success in
+//                if success {
+//                    DispatchQueue.main.async {
+//                        self?.collectionView.reloadData()
+//                    }
+//                }
+//            })
+//
+//        } else {
+//            api.authenticateUser { [weak self] (result) in
+//                if case .success (_ ) = result {
+//                    self?.isUserAuthenticated = true
+//                }
+//            }
+//        }
+//
+//    }
     
-    private func isAuthError(_ error: Error)->Bool {
-        if let error = error as? NetworkError {
-            return error == .authError || error == .noToken
-        }
-        return false
-    }
+//    private func fetchPictures(page: Int, completion: @escaping (_ success: Bool)->Void) {
+//
+//        api.fetchImagesList(page: page) { [weak self] (result) in
+//
+//            guard let strongSelf = self else { return }
+//
+//            switch result {
+//
+//            case .success(let imagesResponse):
+//                //print(imagesResponse)
+//                strongSelf.saveImagesResponse(imagesResponse)
+//                completion(true)
+//
+//            case .failure(let error):
+//                //print(error)
+//                if strongSelf.isAuthError(error) {
+//                    strongSelf.api.deleteAccessToken()
+//                }
+//                completion(false)
+//            }
+//        }
+//    }
     
-    private func loadMoreImages(){
-        guard let currentImagesResponse = viewModel.currentPictureResponse else {
-            return
-        }
-        if currentImagesResponse.page < currentImagesResponse.pageCount {
-            fetchPictures(page: currentImagesResponse.page + 1, completion: { [weak self] success in
-                if success {
-                    DispatchQueue.main.async {
-                        self?.collectionView.reloadData()
-                    }
-                }
-                
-            })
-        }
-    }
+//    private func isAuthError(_ error: Error)->Bool {
+//        if let error = error as? NetworkError {
+//            return error == .authError || error == .noToken
+//        }
+//        return false
+//    }
     
-    private func saveImagesResponse(_ response : PicturesResponse){
-        viewModel.currentPictureResponse = response
-        viewModel.dataSource.append(contentsOf: response.pictures)
-    }
+//    private func loadMoreImages(){
+//        guard let currentImagesResponse = viewModel.currentPictureResponse else {
+//            return
+//        }
+//        if currentImagesResponse.page < currentImagesResponse.pageCount {
+//            fetchPictures(page: currentImagesResponse.page + 1, completion: { [weak self] success in
+//                if success {
+//                    DispatchQueue.main.async {
+//                        self?.collectionView.reloadData()
+//                    }
+//                }
+//                
+//            })
+//        }
+//    }
+    
+//    private func saveImagesResponse(_ response : PicturesResponse){
+//        viewModel.currentPictureResponse = response
+//        viewModel.dataSource.append(contentsOf: response.pictures)
+//    }
 
 
     // MARK: UICollectionViewDataSource
@@ -138,11 +149,14 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
     }
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if !viewModel.dataSource.isEmpty {
-            if indexPath.row == viewModel.numberOfItemsInSection - 1 {  //numberofitem count
-                loadMoreImages()
-            }
-        }
+        
+        viewModel.handleEndOfImagesList(indexPath: indexPath)
+        
+//        if !viewModel.dataSource.isEmpty {
+//            if indexPath.row == viewModel.numberOfItemsInSection - 1 {  //numberofitem count
+//                viewModel.loadMoreImages()
+//            }
+//        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
