@@ -17,20 +17,8 @@ class PhotosListViewModel {
     private let api = AgileApi.shared
 
     //Properties
-    private var isUserAuthenticated : Bool {
-        get { return api.isAuthenticated }
-        set { self.loadImages() }
-    }
     
     var dataSource : [Picture] = []
-    
-    var currentPictureResponse : PicturesResponse?
-    
-    var hasMore : Bool {
-        get {
-            return currentPictureResponse?.hasMore ?? false
-        }
-    }
     
     var numberOfItemsInSection : Int {
         get {
@@ -38,18 +26,20 @@ class PhotosListViewModel {
         }
     }
     
-    func handleEndOfImagesList(indexPath: IndexPath){
-        if !dataSource.isEmpty {
-            if indexPath.row == numberOfItemsInSection - 1 {  //numberofitem count
-                loadMoreImages()
-            }
-        }
+    private var currentPictureResponse : PicturesResponse?
+    
+    private var isUserAuthenticated : Bool {
+        get { return api.isAuthenticated }
+        set { self.loadImages() }
     }
+
+    
+    //Methods:
     
     func loadImages(){
         
         if isUserAuthenticated {
-            fetchPictures(page: 1, completion: { [weak self] success in
+            fetchImages(page: 1, completion: { [weak self] success in
                 if success {
                     self?.didLoadImages?()
                 }
@@ -62,26 +52,30 @@ class PhotosListViewModel {
                 }
             }
         }
-        
+    }
+    
+    func handleEndOfImagesPage(indexPath: IndexPath){
+        if !dataSource.isEmpty {
+            if indexPath.row == numberOfItemsInSection - 1 {  //numberofitem count
+                loadMoreImages()
+            }
+        }
     }
     
     private func loadMoreImages(){
         
-        guard let currentImagesResponse = currentPictureResponse else {
-            return
-        }
+        guard let currentImagesResponse = currentPictureResponse else { return }
         
         if currentImagesResponse.page < currentImagesResponse.pageCount {
-            fetchPictures(page: currentImagesResponse.page + 1, completion: { [weak self] success in
+            fetchImages(page: currentImagesResponse.page + 1, completion: { [weak self] success in
                 if success {
                     self?.didLoadImages?()
                 }
-                
             })
         }
     }
     
-    func fetchPictures(page: Int, completion: @escaping (_ success: Bool)->Void) {
+    private func fetchImages(page: Int, completion: @escaping (_ success: Bool)->Void) {
         
         api.fetchImagesList(page: page) { (result) in
             

@@ -12,10 +12,6 @@ public enum HTTPMethod: String {
     case get = "GET", post = "POST", delete = "DELETE", put = "PUT"
 }
 
-//struct API {
-//    static let baseURL = ""
-//}
-
 public enum StatusCodes : Int {
     case successs = 200
     case authError = 401
@@ -47,59 +43,6 @@ struct NetworkingService {
     }
 
     
-//    func request<T: Decodable>(_ endpoint: String,
-//                               method: HTTPMethod = .get,
-//                               parameters: Parameters = [:],
-//                               success: SuccessHandler<T>?,
-//                               failure: FailureHandler?) {
-//
-//        let urlRequest = buildURLRequest(endpoint, method: method, parameters: parameters)
-//
-//        urlSession.dataTask(with: urlRequest) { data, _, error in
-//            if let data = data {
-//                DispatchQueue.global(qos: .utility).async {
-//                    do {
-//                        let jsonDecoder = JSONDecoder()
-//                        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
-//                        let object = try jsonDecoder.decode(T.self, from: data)
-//
-//                        if let data = object.data {
-//                            DispatchQueue.main.async {
-//                                success?(data)
-//                            }
-//                        } else if let message = object.meta.errorMessage {
-//                            DispatchQueue.main.async {
-//                                //failure?(Netw.invalidRequest(message: message))
-//                            }
-//                        }
-//                    } catch let error {
-//                        DispatchQueue.main.async {
-//                            //failure?(InstagramError.decoding(message: error.localizedDescription))
-//                        }
-//                    }
-//                }
-//            } else if let error = error {
-//                failure?(error)
-//            }
-//            }.resume()
-//    }
-//
-//    private func buildURLRequest(_ endpoint: String, method: HTTPMethod, parameters: Parameters) -> URLRequest {
-//
-//        let url = URL(string: API.baseURL + endpoint)!.appendingQueryParameters(["access_token": ""])
-//
-//        var urlRequest = URLRequest(url: url)
-//        urlRequest.httpMethod = method.rawValue
-//
-//        switch method {
-//        case .get, .delete:
-//            urlRequest.url?.appendQueryParameters(parameters)
-//        case .post, .put:
-//            urlRequest.httpBody = Data(parameters: parameters)
-//        }
-//        return urlRequest
-//    }
-    
     //MARK: - Generic get request
     
     func get<T: Decodable>(url: URL?,
@@ -112,8 +55,7 @@ struct NetworkingService {
         }
         
         let completionHandler: NetworkCompletionHandler = { (data, urlResponse, error) in
-            
-            print(urlResponse)
+            //print(urlResponse)
             
             if let error = error {
                 completion(.failure(error))
@@ -133,9 +75,6 @@ struct NetworkingService {
                         return
                     }
                     
-                    //let dataString = String(data: data, encoding: .utf8)
-                    //print("dataString:", dataString)
-                    
                     do {
                         let responseObject = try JSONDecoder().decode(T.self, from: data)
                         completion(.success(responseObject))
@@ -145,6 +84,7 @@ struct NetworkingService {
                         completion(.failure(NetworkError.decodingFailed))
                         return
                     }
+                    
                 case StatusCodes.authError.rawValue:
                     completion(.failure(NetworkError.authError))
                     return
@@ -164,21 +104,8 @@ struct NetworkingService {
             .resume()
     }
     
-    private func isSuccessCode(_ statusCode: Int) -> Bool {
-        return statusCode >= 200 && statusCode < 300
-    }
-    
-    private func isSuccessCode(_ response: URLResponse?) -> Bool {
-        guard let urlResponse = response as? HTTPURLResponse else {
-            return false
-        }
-        return isSuccessCode(urlResponse.statusCode)
-    }
-    
-    
     func loadImage(urlString: String, completion: @escaping(_ image: UIImage?) -> Void) {
-        
-        print("loading image with url: " + urlString)
+        //print("loading image with url: " + urlString)
         let escapedString = urlString.addingPercentEncoding(withAllowedCharacters:NSCharacterSet.urlQueryAllowed)
         
         guard let encodedString = escapedString, let url = URL(string: encodedString) else {
@@ -200,15 +127,5 @@ struct NetworkingService {
             .resume()
     }
     
-    
 }
 
-
-struct TokenResponse : Decodable {
-    var token : String
-}
-
-
-struct TokenRequest : Encodable {
-    var apiKey : String
-}

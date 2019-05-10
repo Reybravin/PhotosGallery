@@ -16,11 +16,11 @@
 		50D074E32282F8EA0031B78A /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074E22282F8EA0031B78A /* PhotoCell.swift */; };
 		50D074E52282FE770031B78A /* NetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074E42282FE770031B78A /* NetworkingService.swift */; };
 		50D074E82282FF890031B78A /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074E72282FF890031B78A /* NetworkError.swift */; };
-		50D074EC228302CD0031B78A /* ParameteresEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074EB228302CD0031B78A /* ParameteresEncoding.swift */; };
 		50D074EE22831A090031B78A /* AgileApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074ED22831A090031B78A /* AgileApi.swift */; };
 		50D074F0228323D50031B78A /* PhotoImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074EF228323D50031B78A /* PhotoImageView.swift */; };
 		50D074F3228325AD0031B78A /* PicturesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074F2228325AD0031B78A /* PicturesResponse.swift */; };
 		50D074F92285553D0031B78A /* KeychainSwiftDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074F82285553D0031B78A /* KeychainSwiftDistrib.swift */; };
+		50D074FC22859C6A0031B78A /* TokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074FB22859C6A0031B78A /* TokenResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,11 +35,11 @@
 		50D074E22282F8EA0031B78A /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		50D074E42282FE770031B78A /* NetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingService.swift; sourceTree = "<group>"; };
 		50D074E72282FF890031B78A /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
-		50D074EB228302CD0031B78A /* ParameteresEncoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameteresEncoding.swift; sourceTree = "<group>"; };
 		50D074ED22831A090031B78A /* AgileApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgileApi.swift; sourceTree = "<group>"; };
 		50D074EF228323D50031B78A /* PhotoImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImageView.swift; sourceTree = "<group>"; };
 		50D074F2228325AD0031B78A /* PicturesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PicturesResponse.swift; sourceTree = "<group>"; };
 		50D074F82285553D0031B78A /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwiftDistrib.swift; sourceTree = "<group>"; };
+		50D074FB22859C6A0031B78A /* TokenResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,7 +93,6 @@
 			children = (
 				50D074E72282FF890031B78A /* NetworkError.swift */,
 				50D074E42282FE770031B78A /* NetworkingService.swift */,
-				50D074EB228302CD0031B78A /* ParameteresEncoding.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -135,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				50D074ED22831A090031B78A /* AgileApi.swift */,
+				50D074FB22859C6A0031B78A /* TokenResponse.swift */,
 			);
 			path = APIs;
 			sourceTree = "<group>";
@@ -211,7 +211,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				50D074E52282FE770031B78A /* NetworkingService.swift in Sources */,
-				50D074EC228302CD0031B78A /* ParameteresEncoding.swift in Sources */,
 				50D074E32282F8EA0031B78A /* PhotoCell.swift in Sources */,
 				50D074DF2282F7760031B78A /* PhotosListViewController.swift in Sources */,
 				50D074E82282FF890031B78A /* NetworkError.swift in Sources */,
@@ -220,6 +219,7 @@
 				50D074F92285553D0031B78A /* KeychainSwiftDistrib.swift in Sources */,
 				50D074F3228325AD0031B78A /* PicturesResponse.swift in Sources */,
 				50D074CD2282F6BC0031B78A /* AppDelegate.swift in Sources */,
+				50D074FC22859C6A0031B78A /* TokenResponse.swift in Sources */,
 				50D074E12282F8190031B78A /* PhotosListViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

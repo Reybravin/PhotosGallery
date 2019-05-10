@@ -16,7 +16,7 @@ struct AgileApi {
     
     private let urlSession = URLSession(configuration: .default)
 
-    let apiKey = "23567b218376f79d9415"
+    private let apiKey = "23567b218376f79d9415"
     
     private enum API {
         static let baseUrl = URL(string:"http://195.39.233.28:8035")!
@@ -47,13 +47,7 @@ struct AgileApi {
     func authenticateUser(completion: @escaping (_ result: Result<Bool,Error>)->Void) {
         
         let urlString = "http://195.39.233.28:8035/auth"
-        //let authURL = API.authUrl
-        //print(authURL)
-        
-        guard let authURL = URL(string: urlString) else {
-            //failure?(NetworkError.invalidUrl)
-            return
-        }
+        guard let authURL = URL(string: urlString) else { return }
         
         var request = URLRequest(url: authURL)
         request.httpMethod = HTTPMethod.post.rawValue
@@ -71,21 +65,15 @@ struct AgileApi {
             }
             
             if let data = data, let text = String(data: data, encoding: .utf8) {
-                
                 print(text)
-                
                 do {
                     let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
-                    print("token:", tokenResponse)
                     self.storeAccessToken(tokenResponse.token)
                     completion(.success(true))
                     
                 } catch let error{
-                    
                     print(error)
-                    
                 }
-
             }
             }.resume()
     }
@@ -102,9 +90,6 @@ struct AgileApi {
             completion(.failure(NetworkError.noToken))
             return
         }
-        
-        //let urlString = "http://195.39.233.28:8035/images"
-        //var urlComponents = URLComponents(string: urlString)
         
         let imagesUrl = API.imagesUrl
         var urlComponents = URLComponents(url: imagesUrl, resolvingAgainstBaseURL: true)

@@ -10,19 +10,10 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-
 class PhotosListViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var viewModel = PhotosListViewModel()
-    
     let defaultSpacing : CGFloat = 10
-    
-    //private let api = AgileApi.shared
-    
-//    private var isUserAuthenticated : Bool {
-//        get { return AgileApi.shared.isAuthenticated }
-//        set { self.loadImages() }
-//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,87 +29,12 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
     }
     
     private func bindToViewModel() {
-        
         viewModel.didLoadImages = {
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
             }
         }
-        
     }
-    
-//    private func loadImages(){
-//
-//        if isUserAuthenticated {
-//            fetchPictures(page: 1, completion: { [weak self] success in
-//                if success {
-//                    DispatchQueue.main.async {
-//                        self?.collectionView.reloadData()
-//                    }
-//                }
-//            })
-//
-//        } else {
-//            api.authenticateUser { [weak self] (result) in
-//                if case .success (_ ) = result {
-//                    self?.isUserAuthenticated = true
-//                }
-//            }
-//        }
-//
-//    }
-    
-//    private func fetchPictures(page: Int, completion: @escaping (_ success: Bool)->Void) {
-//
-//        api.fetchImagesList(page: page) { [weak self] (result) in
-//
-//            guard let strongSelf = self else { return }
-//
-//            switch result {
-//
-//            case .success(let imagesResponse):
-//                //print(imagesResponse)
-//                strongSelf.saveImagesResponse(imagesResponse)
-//                completion(true)
-//
-//            case .failure(let error):
-//                //print(error)
-//                if strongSelf.isAuthError(error) {
-//                    strongSelf.api.deleteAccessToken()
-//                }
-//                completion(false)
-//            }
-//        }
-//    }
-    
-//    private func isAuthError(_ error: Error)->Bool {
-//        if let error = error as? NetworkError {
-//            return error == .authError || error == .noToken
-//        }
-//        return false
-//    }
-    
-//    private func loadMoreImages(){
-//        guard let currentImagesResponse = viewModel.currentPictureResponse else {
-//            return
-//        }
-//        if currentImagesResponse.page < currentImagesResponse.pageCount {
-//            fetchPictures(page: currentImagesResponse.page + 1, completion: { [weak self] success in
-//                if success {
-//                    DispatchQueue.main.async {
-//                        self?.collectionView.reloadData()
-//                    }
-//                }
-//                
-//            })
-//        }
-//    }
-    
-//    private func saveImagesResponse(_ response : PicturesResponse){
-//        viewModel.currentPictureResponse = response
-//        viewModel.dataSource.append(contentsOf: response.pictures)
-//    }
-
 
     // MARK: UICollectionViewDataSource
 
@@ -149,27 +65,12 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
     }
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-        viewModel.handleEndOfImagesList(indexPath: indexPath)
-        
-//        if !viewModel.dataSource.isEmpty {
-//            if indexPath.row == viewModel.numberOfItemsInSection - 1 {  //numberofitem count
-//                viewModel.loadMoreImages()
-//            }
-//        }
+        viewModel.handleEndOfImagesPage(indexPath: indexPath)
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = viewModel.dataSource[indexPath.row]
         print("item:" , item)
     }
-    
-    //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-    //        return defaultSpacing
-    //    }
-    //
-    //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-    //        return defaultSpacing
-    //    }
 
 }
