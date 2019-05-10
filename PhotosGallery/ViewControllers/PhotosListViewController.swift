@@ -19,32 +19,42 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
     
     private let api = AgileApi.shared
     
+    private var isUserAuthenticated : Bool {
+        get { return AgileApi.shared.isAuthenticated }
+        set { self.loadImages() }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         loadImages()
-        //fetchPictures(page: 1)
     }
 
     // MARK: Methods
     
     private func setupView(){
         self.collectionView!.register(PhotoCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        self.view.backgroundColor = .cyan
     }
     
     private func loadImages(){
         
-        fetchPictures(page: 1, completion: { success in
-            if success {
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
+        if isUserAuthenticated {
+            fetchPictures(page: 1, completion: { [weak self] success in
+                if success {
+                    DispatchQueue.main.async {
+                        self?.collectionView.reloadData()
+                    }
                 }
-            } else {
-                print("Images loading error")
-                //show error message to the user
+            })
+            
+        } else {
+            api.authenticateUser { [weak self] (result) in
+                if case .success (_ ) = result {
+                    self?.isUserAuthenticated = true
+                }
             }
-        })
+        }
+        
     }
     
     private func fetchPictures(page: Int, completion: @escaping (_ success: Bool)->Void) {
@@ -56,37 +66,16 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
             switch result {
                 
             case .success(let imagesResponse):
-                print(imagesResponse)
+                //print(imagesResponse)
                 strongSelf.saveImagesResponse(imagesResponse)
                 completion(true)
                 
             case .failure(let error):
-                
-                print(error)
-                
+                //print(error)
                 if strongSelf.isAuthError(error) {
-                    
-                    strongSelf.api.authenticateUser(completion: { (result) in
-                        
-                        if case .success (_ ) = result {
-                            
-                            strongSelf.api.fetchImagesList(page: page, completion: { (result) in
-                                
-                                if case .success (let imagesResponse) = result {
-                                    strongSelf.saveImagesResponse(imagesResponse)
-                                    completion(true)
-                                    return
-                                } else {
-                                    completion(false)
-                                }
-                            })
-                        } else {
-                            completion(false)
-                        }
-                    })
-                } else {
-                    completion(false)
+                    strongSelf.api.deleteAccessToken()
                 }
+                completion(false)
             }
         }
     }
@@ -103,10 +92,13 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
             return
         }
         if currentImagesResponse.page < currentImagesResponse.pageCount {
-            fetchPictures(page: currentImagesResponse.page + 1, completion: { success in
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
+            fetchPictures(page: currentImagesResponse.page + 1, completion: { [weak self] success in
+                if success {
+                    DispatchQueue.main.async {
+                        self?.collectionView.reloadData()
+                    }
                 }
+                
             })
         }
     }

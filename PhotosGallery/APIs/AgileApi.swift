@@ -12,10 +12,10 @@ struct AgileApi {
     
     static let shared = AgileApi()
     
-    private let urlSession = URLSession(configuration: .default)
-
     private init(){}
     
+    private let urlSession = URLSession(configuration: .default)
+
     let apiKey = "23567b218376f79d9415"
     
     private enum API {
@@ -36,6 +36,10 @@ struct AgileApi {
     
     public func retrieveAccessToken() -> String? {
         return keychain.get(Keychain.accessTokenKey)
+    }
+    
+    public func deleteAccessToken() -> Bool {
+        return keychain.delete(Keychain.accessTokenKey)
     }
     
     //MARK: - Login
@@ -89,7 +93,6 @@ struct AgileApi {
     public var isAuthenticated: Bool {
         return retrieveAccessToken() != nil
     }
-
     
     //MARK: - Fetching data
     
