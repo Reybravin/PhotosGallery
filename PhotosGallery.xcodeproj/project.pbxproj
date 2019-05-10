@@ -20,6 +20,7 @@
 		50D074EE22831A090031B78A /* AgileApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074ED22831A090031B78A /* AgileApi.swift */; };
 		50D074F0228323D50031B78A /* PhotoImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074EF228323D50031B78A /* PhotoImageView.swift */; };
 		50D074F3228325AD0031B78A /* PicturesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074F2228325AD0031B78A /* PicturesResponse.swift */; };
+		50D074F92285553D0031B78A /* KeychainSwiftDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D074F82285553D0031B78A /* KeychainSwiftDistrib.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		50D074ED22831A090031B78A /* AgileApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgileApi.swift; sourceTree = "<group>"; };
 		50D074EF228323D50031B78A /* PhotoImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImageView.swift; sourceTree = "<group>"; };
 		50D074F2228325AD0031B78A /* PicturesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PicturesResponse.swift; sourceTree = "<group>"; };
+		50D074F82285553D0031B78A /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwiftDistrib.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,16 +73,17 @@
 			isa = PBXGroup;
 			children = (
 				50D074F7228326C00031B78A /* APIs */,
+				50D074E62282FF7B0031B78A /* Networking */,
 				50D074F62283269F0031B78A /* ViewControllers */,
 				50D074F5228326940031B78A /* ViewModels */,
 				50D074F42283260F0031B78A /* Views */,
 				50D074F12283259C0031B78A /* Models */,
-				50D074E62282FF7B0031B78A /* Networking */,
 				50D074CC2282F6BC0031B78A /* AppDelegate.swift */,
 				50D074D02282F6BC0031B78A /* Main.storyboard */,
 				50D074D52282F6BE0031B78A /* LaunchScreen.storyboard */,
 				50D074D82282F6BE0031B78A /* Info.plist */,
 				50D074D32282F6BE0031B78A /* Assets.xcassets */,
+				50D074F82285553D0031B78A /* KeychainSwiftDistrib.swift */,
 			);
 			path = PhotosGallery;
 			sourceTree = "<group>";
@@ -214,6 +217,7 @@
 				50D074E82282FF890031B78A /* NetworkError.swift in Sources */,
 				50D074EE22831A090031B78A /* AgileApi.swift in Sources */,
 				50D074F0228323D50031B78A /* PhotoImageView.swift in Sources */,
+				50D074F92285553D0031B78A /* KeychainSwiftDistrib.swift in Sources */,
 				50D074F3228325AD0031B78A /* PicturesResponse.swift in Sources */,
 				50D074CD2282F6BC0031B78A /* AppDelegate.swift in Sources */,
 				50D074E12282F8190031B78A /* PhotosListViewModel.swift in Sources */,

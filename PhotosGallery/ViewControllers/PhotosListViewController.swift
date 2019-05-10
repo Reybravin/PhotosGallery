@@ -17,29 +17,13 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
     
     let defaultSpacing : CGFloat = 10
     
+    private let api = AgileApi.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-//        NetworkingService.shared.authenticateUser(completion: { result in
-//            if case .success(let success) = result {
-//                //
-//            }
-//        })
-        
-//        AgileApi.fetchImagesList(page: 1) { [weak self] (result) in
-//            switch result {
-//            case .success(let imagesResponse) :
-//                print(imagesResponse)
-//                self?.viewModel.dataSource = imagesResponse.pictures
-//                DispatchQueue.main.async {
-//                    self?.collectionView.reloadData()
-//                }
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-        
-        fetchPictures(page: 1)
+        loadImages()
+        //fetchPictures(page: 1)
     }
 
     // MARK: Methods
@@ -49,33 +33,89 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
         self.view.backgroundColor = .cyan
     }
     
-    private func fetchPictures(page: Int) {
+    private func loadImages(){
         
-        AgileApi.fetchImagesList(page: page) { [weak self] (result) in
-            switch result {
-            case .success(let imagesResponse) :
-                print(imagesResponse)
-                self?.viewModel.currentPictureResponse = imagesResponse
-                self?.viewModel.dataSource.append(contentsOf: imagesResponse.pictures)
+        fetchPictures(page: 1, completion: { success in
+            if success {
                 DispatchQueue.main.async {
-                    self?.collectionView.reloadData()
+                    self.collectionView.reloadData()
                 }
-            case .failure(let error):
-                print(error)
+            } else {
+                print("Images loading error")
+                //show error message to the user
             }
-        }
-        
+        })
     }
     
+    private func fetchPictures(page: Int, completion: @escaping (_ success: Bool)->Void) {
+        
+        api.fetchImagesList(page: page) { [weak self] (result) in
+            
+            guard let strongSelf = self else { return }
+            
+            switch result {
+                
+            case .success(let imagesResponse):
+                print(imagesResponse)
+                strongSelf.saveImagesResponse(imagesResponse)
+                completion(true)
+                
+            case .failure(let error):
+                
+                print(error)
+                
+                if strongSelf.isAuthError(error) {
+                    
+                    strongSelf.api.authenticateUser(completion: { (result) in
+                        
+                        if case .success (_ ) = result {
+                            
+                            strongSelf.api.fetchImagesList(page: page, completion: { (result) in
+                                
+                                if case .success (let imagesResponse) = result {
+                                    strongSelf.saveImagesResponse(imagesResponse)
+                                    completion(true)
+                                    return
+                                } else {
+                                    completion(false)
+                                }
+                            })
+                        } else {
+                            completion(false)
+                        }
+                    })
+                } else {
+                    completion(false)
+                }
+            }
+        }
+    }
     
-    private func fetchMoreImages(){
+    private func isAuthError(_ error: Error)->Bool {
+        if let error = error as? NetworkError {
+            return error == .authError || error == .noToken
+        }
+        return false
+    }
+    
+    private func loadMoreImages(){
         guard let currentImagesResponse = viewModel.currentPictureResponse else {
             return
         }
         if currentImagesResponse.page < currentImagesResponse.pageCount {
-            fetchPictures(page: currentImagesResponse.page + 1)
+            fetchPictures(page: currentImagesResponse.page + 1, completion: { success in
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            })
         }
     }
+    
+    private func saveImagesResponse(_ response : PicturesResponse){
+        viewModel.currentPictureResponse = response
+        viewModel.dataSource.append(contentsOf: response.pictures)
+    }
+
 
     // MARK: UICollectionViewDataSource
 
@@ -108,7 +148,7 @@ class PhotosListViewController: UICollectionViewController, UICollectionViewDele
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !viewModel.dataSource.isEmpty {
             if indexPath.row == viewModel.numberOfItemsInSection - 1 {  //numberofitem count
-                fetchMoreImages()
+                loadMoreImages()
             }
         }
     }

@@ -12,11 +12,14 @@ public enum HTTPMethod: String {
     case get = "GET", post = "POST", delete = "DELETE", put = "PUT"
 }
 
-struct API {
-    
-    static let baseURL = ""
-}
+//struct API {
+//    static let baseURL = ""
+//}
 
+public enum StatusCodes : Int {
+    case successs = 200
+    case authError = 401
+}
 
 struct NetworkingService {
     
@@ -42,72 +45,6 @@ struct NetworkingService {
     private enum Keychain {
         static let accessTokenKey = "AccessToken"
     }
-    
-    //MARK: - Login
-    
-    
-    func authenticateUser(completion: @escaping (_ result: Result<Bool,Error>)->Void) {
-        
-        let urlString = "http://195.39.233.28:8035/auth"
-        
-        guard let authURL = URL(string: urlString) else {
-//            failure?(NetworkError.invalidUrl)
-            return
-        }
-        
-        var request = URLRequest(url: authURL)
-        request.httpMethod = HTTPMethod.post.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let parameters = ["apiKey" : "23567b218376f79d9415" ]
-        guard let jsonData = try? JSONEncoder().encode(parameters) else { return }
-        request.httpBody = jsonData
-        
-        urlSession.dataTask(with: request) { (data, response, error) in
-            
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            if let data = data, let text = String(data: data, encoding: .utf8) {
-                
-                print(text)
-                
-                do {
-                    let token = try JSONDecoder().decode(TokenResponse.self, from: data)
-                    print("token:", token)
-                    
-                    completion(.success(true))
-                    
-                } catch let error{
-                    
-                    print(error)
-                    
-                }
-                
-            }
-        }.resume()
-    }
-    
-    
-//    func authenticateUser<T: Decodable>(success: SuccessHandler<T>?, failure: FailureHandler?) {
-//
-//        let urlString = "http://195.39.233.28:8035"
-//
-//        guard let authURL = URL(string: "http://195.39.233.28:8035") else {
-//            failure?(NetworkError.invalidUrl)
-//            return
-//        }
-//
-//        let parameters = ["apiKey" : "23567b218376f79d9415"]
-//        request(urlString, method: .post, parameters: parameters, success: { (token) in
-//            success?(token)
-//        }) { (error) in
-//            print(error)
-//        }
-//
-//    }
 
     
 //    func request<T: Decodable>(_ endpoint: String,
@@ -183,32 +120,42 @@ struct NetworkingService {
                 return
             }
             
-            if let data = data {
-                if let str = String(data: data, encoding: .utf8) {
-                    print(str)
-                }
-            }
-            
-            if self.isSuccessCode(urlResponse) {
-                guard let data = data else {
-                    completion(.failure(NetworkError.dataParsingError))
+            if let response = urlResponse as? HTTPURLResponse {
+                
+                let statusCode = response.statusCode
+                
+                switch statusCode {
+                    
+                case StatusCodes.successs.rawValue:
+                    
+                    guard let data = data else {
+                        completion(.failure(NetworkError.dataParsingError))
+                        return
+                    }
+                    
+                    //let dataString = String(data: data, encoding: .utf8)
+                    //print("dataString:", dataString)
+                    
+                    do {
+                        let responseObject = try JSONDecoder().decode(T.self, from: data)
+                        completion(.success(responseObject))
+                        return
+                    } catch (let error){
+                        print(error)
+                        completion(.failure(NetworkError.decodingFailed))
+                        return
+                    }
+                case StatusCodes.authError.rawValue:
+                    completion(.failure(NetworkError.authError))
+                    return
+                    
+                default:
+                    completion(.failure(NetworkError.genericError))
                     return
                 }
-                
-                let dataString = String(data: data, encoding: .utf8)
-                print("dataString:", dataString)
-                
-                do {
-                    let responseObject = try JSONDecoder().decode(T.self, from: data)
-                    completion(.success(responseObject))
-                    return
-                } catch (let error){
-                    print(error)
-                    completion(.failure(NetworkError.decodingFailed))
-                }
-
             }
-            completion(.failure(NetworkError.genericError))
+            completion(.failure(NetworkError.noResponseError))
+            return
         }
         
         var request = URLRequest(url: url)
@@ -227,8 +174,6 @@ struct NetworkingService {
         }
         return isSuccessCode(urlResponse.statusCode)
     }
-    
-    
     
     
     func loadImage(urlString: String, completion: @escaping(_ image: UIImage?) -> Void) {
